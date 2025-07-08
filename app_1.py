@@ -65,6 +65,23 @@ if uploaded_file:
     sns.scatterplot(data=df_clustered, x='TSNE1', y='TSNE2', hue='Cluster', palette='tab10', ax=ax_tsne)
     st.pyplot(fig_tsne)
 
+    st.subheader("📊 Step 7: Extra Cluster Insights")
+
+    # Bar Chart: Avg TotalSpend by Cluster
+    if 'TotalSpend' in df_clustered.columns:
+        st.markdown("#### 💰 Avg Total Spend by Cluster")
+        fig_spend, ax_spend = plt.subplots()
+        sns.barplot(data=df_clustered, x="Cluster", y="TotalSpend", estimator='mean', ci=None, ax=ax_spend)
+        st.pyplot(fig_spend)
+
+    # Pie Chart: Customer Distribution
+    cluster_counts = df_clustered['Cluster'].value_counts()
+    st.markdown("#### 👥 Customer Distribution by Cluster")
+    fig_pie, ax_pie = plt.subplots()
+    ax_pie.pie(cluster_counts, labels=cluster_counts.index, autopct='%1.1f%%', startangle=90)
+    ax_pie.axis('equal')
+    st.pyplot(fig_pie)
+
     # PDF Report Generator
     def create_pdf(cluster_profiles):
         pdf = FPDF()

@@ -84,18 +84,26 @@ if uploaded_file:
 
     # PDF Report Generator
     def create_pdf(cluster_profiles):
-        pdf = FPDF()
-        pdf.add_page()
-        pdf.set_font("Arial", size=12)
-        pdf.cell(200, 10, txt="Cluster Profile Report", ln=True, align='C')
+    pdf = FPDF()
+    pdf.add_page()
+    pdf.set_font("Arial", size=12)
+    pdf.cell(200, 10, txt="Cluster Profile Report", ln=True, align='C')
+
+    if cluster_profiles.empty:
+        pdf.ln(10)
+        pdf.cell(200, 10, txt="No data available to generate report.", ln=True)
+    else:
         for idx, row in cluster_profiles.iterrows():
             pdf.ln(10)
             pdf.set_font("Arial", 'B', size=11)
             pdf.cell(200, 10, txt=f"Cluster {idx}", ln=True)
             pdf.set_font("Arial", size=10)
             for col, val in row.items():
-                pdf.cell(200, 8, txt=f"{col}: {round(val,2)}", ln=True)
-        return pdf.output(dest='S').encode('latin1')
+                val_str = f"{val:.2f}" if isinstance(val, (int, float)) else str(val)
+                pdf.cell(200, 8, txt=f"{col}: {val_str}", ln=True)
+
+    return pdf.output(dest='S').encode('latin1')
+
 
     pdf_bytes = create_pdf(cluster_profiles)
     b64 = base64.b64encode(pdf_bytes).decode()

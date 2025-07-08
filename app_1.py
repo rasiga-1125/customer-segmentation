@@ -104,11 +104,9 @@ if uploaded_file:
 
     return pdf.output(dest='S').encode('latin1')
 
-
     pdf_bytes = create_pdf(cluster_profiles)
     b64 = base64.b64encode(pdf_bytes).decode()
     st.markdown(f"📄 [Download Cluster Report PDF](data:application/pdf;base64,{b64})", unsafe_allow_html=True)
-
     st.download_button("📥 Download Clustered Data", df_clustered.to_csv(index=False), "clustered_data.csv")
 
 else:

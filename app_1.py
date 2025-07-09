@@ -15,7 +15,7 @@ st.set_page_config(page_title="Smart Customer Segmentation", layout="wide")
 
 # Branding
 st.image("https://i.imgur.com/Ob2yZ.png", width=100)
-st.markdown("<h2 style='color:#0e76a8;'>Pappu AI - Customer Intelligence System</h2>", unsafe_allow_html=True)
+st.markdown("<h2 style='color:#0e76a8;'>AI - Customer Intelligence System</h2>", unsafe_allow_html=True)
 
 st.markdown("Upload your **customer data**. We'll clean it, cluster it, and suggest the best marketing plans.")
 
@@ -88,25 +88,24 @@ if uploaded_file:
         pdf.add_page()
         pdf.set_font("Arial", size=12)
         pdf.cell(200, 10, txt="Cluster Profile Report", ln=True, align='C')
-    
-        if cluster_profiles.empty:
+        for idx, row in cluster_profiles.iterrows():
             pdf.ln(10)
-            pdf.cell(200, 10, txt="No data available to generate report.", ln=True)
-        else:
-            for idx, row in cluster_profiles.iterrows():
-                pdf.ln(10)
-                pdf.set_font("Arial", 'B', size=11)
-                pdf.cell(200, 10, txt=f"Cluster {idx}", ln=True)
-                pdf.set_font("Arial", size=10)
-                for col, val in row.items():
-                    val_str = f"{val:.2f}" if isinstance(val, (int, float)) else str(val)
-                    pdf.cell(200, 8, txt=f"{col}: {val_str}", ln=True)
-    
+            pdf.set_font("Arial", 'B', size=11)
+            pdf.cell(200, 10, txt=f"Cluster {idx}", ln=True)
+            pdf.set_font("Arial", size=10)
+            for col, val in row.items():
+                pdf.cell(200, 8, txt=f"{col}: {round(val,2)}", ln=True)
         return pdf.output(dest='S').encode('latin1')
 
     pdf_bytes = create_pdf(cluster_profiles)
     b64 = base64.b64encode(pdf_bytes).decode()
-    st.markdown(f"📄 [Download Cluster Report PDF](data:application/pdf;base64,{b64})", unsafe_allow_html=True)
+    st.download_button(
+    label="📄 Download Cluster Report PDF",
+    data=pdf_bytes,
+    file_name="cluster_report.pdf",
+    mime="application/pdf"
+)
+
     st.download_button("📥 Download Clustered Data", df_clustered.to_csv(index=False), "clustered_data.csv")
 
 else:

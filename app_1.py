@@ -119,29 +119,29 @@ if uploaded_file:
                     val_str = f"{val:.2f}" if isinstance(val, (int, float)) else str(val)
                     pdf.cell(200, 8, txt=f"{col}: {val_str}", ln=True)
     
-        # Insert actual saved pie chart if exists
-        if os.path.exists("real_cluster_pie.png"):
+        # ✅ Combined Pie + Bar chart on same page
+        if os.path.exists("real_cluster_pie.png") and 'TotalSpend' in cluster_profiles.columns:
             pdf.add_page()
             pdf.set_font("Arial", 'B', 12)
-            pdf.cell(200, 10, txt="Customer Distribution by Cluster", ln=True, align='C')
-            pdf.image("real_cluster_pie.png", x=30, w=150)
+            pdf.cell(200, 10, txt="Cluster Distribution & Total Spend", ln=True, align='C')
     
-        # Bar chart: Total Spend per cluster
-        if 'TotalSpend' in cluster_profiles.columns:
-            pdf.add_page()
-            fig2, ax2 = plt.subplots(figsize=(6, 4))
+            # Prepare bar chart with single color bars
+            fig2, ax2 = plt.subplots(figsize=(5, 3))
             cluster_profiles['TotalSpend'] = cluster_profiles['TotalSpend'].astype(float)
-            cluster_profiles['TotalSpend'].plot(kind='bar', ax=ax2)
+            bars = cluster_profiles['TotalSpend'].plot(kind='bar', color='skyblue', ax=ax2)
             ax2.set_title("Total Spend by Cluster")
             ax2.set_xlabel("Cluster")
             ax2.set_ylabel("Total Spend (normalized)")
             ax2.set_xticks(range(len(cluster_profiles)))
             ax2.set_xticklabels([f"Cluster {i}" for i in cluster_profiles.index])
             plt.tight_layout()
-            with tempfile.NamedTemporaryFile(delete=False, suffix=".png") as barfile:
-                fig2.savefig(barfile.name, format="PNG")
-                plt.close(fig2)
-                pdf.image(barfile.name, x=30, w=150)
+            bar_path = "bar_chart.png"
+            fig2.savefig(bar_path)
+            plt.close(fig2)
+    
+            # Insert both charts side by side (pie chart should already exist)
+            pdf.image("real_cluster_pie.png", x=10, y=40, w=90)
+            pdf.image(bar_path, x=110, y=40, w=90)
     
         # Smart suggestions section
         pdf.add_page()
@@ -169,7 +169,7 @@ if uploaded_file:
         # Footer
         pdf.set_y(-20)
         pdf.set_font("Arial", 'I', 8)
-        pdf.cell(0, 10, '© 2025 Rasiga Priya | Final Project Submission', 0, 0, 'C')
+        pdf.cell(0, 10, '© 2025 Ragvendra Murugesan | Final Project Submission', 0, 0, 'C')
     
         return pdf.output(dest='S').encode('latin1')
 

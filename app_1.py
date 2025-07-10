@@ -89,6 +89,7 @@ if uploaded_file:
         import matplotlib.pyplot as plt
         from fpdf import FPDF
         import tempfile
+        import pandas as pd
     
         pdf = FPDF()
         pdf.add_page()
@@ -115,24 +116,35 @@ if uploaded_file:
                     val_str = f"{val:.2f}" if isinstance(val, (int, float)) else str(val)
                     pdf.cell(200, 8, txt=f"{col}: {val_str}", ln=True)
     
-        # Pie chart image (temporary file)
-        cluster_counts = cluster_profiles.shape[0]
-        if cluster_counts > 1:
-            fig, ax = plt.subplots(figsize=(4, 4))
-            sizes = [1 for _ in range(cluster_counts)]  # dummy equal size
-            labels = [f"Cluster {i}" for i in range(cluster_counts)]
-            ax.pie(sizes, labels=labels, autopct='%1.1f%%')
-            ax.set_title("Sample Cluster Distribution")
-        
-            # Save chart to temporary file
-            with tempfile.NamedTemporaryFile(delete=False, suffix=".png") as tmpfile:
-                temp_img_path = tmpfile.name
-                fig.savefig(temp_img_path, format="PNG")
-            plt.close(fig)
-
-            # Add image to PDF
-            pdf.image(temp_img_path, x=60, w=90)
-
+        # Charts Section
+        if not cluster_profiles.empty:
+            # Pie chart: cluster distribution (dummy example, real chart logic should use actual cluster assignment counts)
+            pdf.add_page()
+            fig1, ax1 = plt.subplots(figsize=(4, 4))
+            sizes = [1 for _ in range(len(cluster_profiles))]  # Update with real cluster size if available
+            labels = [f"Cluster {i}" for i in range(len(cluster_profiles))]
+            ax1.pie(sizes, labels=labels, autopct='%1.1f%%')
+            ax1.set_title("Cluster Distribution (Dummy)")
+            with tempfile.NamedTemporaryFile(delete=False, suffix=".png") as piefile:
+                fig1.savefig(piefile.name, format="PNG")
+                plt.close(fig1)
+                pdf.image(piefile.name, x=60, w=90)
+    
+            # Bar chart: Total Spend per cluster
+            pdf.add_page()
+            fig2, ax2 = plt.subplots(figsize=(6, 4))
+            cluster_profiles['TotalSpend'] = cluster_profiles['TotalSpend'].astype(float)
+            cluster_profiles['TotalSpend'].plot(kind='bar', ax=ax2)
+            ax2.set_title("Total Spend by Cluster")
+            ax2.set_xlabel("Cluster")
+            ax2.set_ylabel("Total Spend (normalized)")
+            ax2.set_xticks(range(len(cluster_profiles)))
+            ax2.set_xticklabels([f"Cluster {i}" for i in cluster_profiles.index])
+            plt.tight_layout()
+            with tempfile.NamedTemporaryFile(delete=False, suffix=".png") as barfile:
+                fig2.savefig(barfile.name, format="PNG")
+                plt.close(fig2)
+                pdf.image(barfile.name, x=30, w=150)
     
         # Smart suggestions section
         pdf.add_page()

@@ -124,7 +124,7 @@ if uploaded_file:
             pdf.add_page()
             pdf.set_font("Arial", 'B', 14)
             pdf.cell(200, 10, txt="Customer Distribution by Cluster", ln=True, align='C')
-            pdf.image("real_cluster_pie.png", x=30, y=30, w=150, h=150)
+            pdf.image("real_cluster_pie.png", x=30, y=30, w=150, h=130)
     
         # Bar Chart Page
         if 'TotalSpend' in cluster_profiles.columns:
@@ -144,7 +144,7 @@ if uploaded_file:
             pdf.add_page()
             pdf.set_font("Arial", 'B', 14)
             pdf.cell(200, 10, txt="Average Total Spend per Cluster", ln=True, align='C')
-            pdf.image(bar_path, x=30, y=30, w=150, h=150)
+            pdf.image(bar_path, x=30, y=30, w=150, h=130)
     
         # Smart suggestions section
         pdf.add_page()

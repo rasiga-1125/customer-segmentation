@@ -141,8 +141,8 @@ if uploaded_file:
             pdf.cell(200, 10, txt="Cluster Distribution & Total Spend", ln=True, align='C')
     
             # Insert images equally
-            pdf.image("real_cluster_pie.png", x=10, y=30, w=95, h=95)
-            pdf.image(bar_path, x=105, y=30, w=95, h=95)
+            pdf.image("real_cluster_pie.png", x=105, y=30, w=100, h=100)
+            pdf.image(bar_path, x=105, y=30, w=100, h=100)
     
         # Smart suggestions section
         pdf.add_page()

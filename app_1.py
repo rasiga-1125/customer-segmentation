@@ -119,10 +119,16 @@ if uploaded_file:
                     val_str = f"{val:.2f}" if isinstance(val, (int, float)) else str(val)
                     pdf.cell(200, 8, txt=f"{col}: {val_str}", ln=True)
     
-        # ✅ Combined Pie + Bar chart on same page, equal size fill
-        if os.path.exists("real_cluster_pie.png") and 'TotalSpend' in cluster_profiles.columns:
-            # Create large bar chart
-            fig2, ax2 = plt.subplots(figsize=(5, 5))
+        # Pie Chart Page
+        if os.path.exists("real_cluster_pie.png"):
+            pdf.add_page()
+            pdf.set_font("Arial", 'B', 14)
+            pdf.cell(200, 10, txt="Customer Distribution by Cluster", ln=True, align='C')
+            pdf.image("real_cluster_pie.png", x=30, y=30, w=150, h=150)
+    
+        # Bar Chart Page
+        if 'TotalSpend' in cluster_profiles.columns:
+            fig2, ax2 = plt.subplots(figsize=(6, 4))
             cluster_profiles['TotalSpend'] = cluster_profiles['TotalSpend'].astype(float)
             cluster_profiles['TotalSpend'].plot(kind='bar', color='skyblue', ax=ax2)
             ax2.set_title("Total Spend by Cluster")
@@ -135,14 +141,10 @@ if uploaded_file:
             fig2.savefig(bar_path)
             plt.close(fig2)
     
-            # New page to hold both charts side-by-side big size
             pdf.add_page()
-            pdf.set_font("Arial", 'B', 12)
-            pdf.cell(200, 10, txt="Cluster Distribution & Total Spend", ln=True, align='C')
-    
-            # Insert images equally
-            pdf.image("real_cluster_pie.png", x=105, y=30, w=100, h=100)
-            pdf.image(bar_path, x=105, y=30, w=100, h=100)
+            pdf.set_font("Arial", 'B', 14)
+            pdf.cell(200, 10, txt="Average Total Spend per Cluster", ln=True, align='C')
+            pdf.image(bar_path, x=30, y=30, w=150, h=150)
     
         # Smart suggestions section
         pdf.add_page()

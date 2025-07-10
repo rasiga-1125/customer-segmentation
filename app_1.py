@@ -123,10 +123,16 @@ if uploaded_file:
             labels = [f"Cluster {i}" for i in range(cluster_counts)]
             ax.pie(sizes, labels=labels, autopct='%1.1f%%')
             ax.set_title("Sample Cluster Distribution")
+        
+            # Save chart to temporary file
             with tempfile.NamedTemporaryFile(delete=False, suffix=".png") as tmpfile:
-                fig.savefig(tmpfile.name, format="PNG")
-                plt.close(fig)
-                pdf.image(tmpfile.name, x=60, w=90)
+                temp_img_path = tmpfile.name
+                fig.savefig(temp_img_path, format="PNG")
+            plt.close(fig)
+
+            # Add image to PDF
+            pdf.image(temp_img_path, x=60, w=90)
+
     
         # Smart suggestions section
         pdf.add_page()

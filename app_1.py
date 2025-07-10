@@ -119,16 +119,12 @@ if uploaded_file:
                     val_str = f"{val:.2f}" if isinstance(val, (int, float)) else str(val)
                     pdf.cell(200, 8, txt=f"{col}: {val_str}", ln=True)
     
-        # ✅ Combined Pie + Bar chart on same page
+        # ✅ Combined Pie + Bar chart on same page, equal size fill
         if os.path.exists("real_cluster_pie.png") and 'TotalSpend' in cluster_profiles.columns:
-            pdf.add_page()
-            pdf.set_font("Arial", 'B', 12)
-            pdf.cell(200, 10, txt="Cluster Distribution & Total Spend", ln=True, align='C')
-    
-            # Prepare bar chart with single color bars
-            fig2, ax2 = plt.subplots(figsize=(5, 3))
+            # Create large bar chart
+            fig2, ax2 = plt.subplots(figsize=(5, 5))
             cluster_profiles['TotalSpend'] = cluster_profiles['TotalSpend'].astype(float)
-            bars = cluster_profiles['TotalSpend'].plot(kind='bar', color='skyblue', ax=ax2)
+            cluster_profiles['TotalSpend'].plot(kind='bar', color='skyblue', ax=ax2)
             ax2.set_title("Total Spend by Cluster")
             ax2.set_xlabel("Cluster")
             ax2.set_ylabel("Total Spend (normalized)")
@@ -139,9 +135,14 @@ if uploaded_file:
             fig2.savefig(bar_path)
             plt.close(fig2)
     
-            # Insert both charts side by side (pie chart should already exist)
-            pdf.image("real_cluster_pie.png", x=10, y=40, w=90)
-            pdf.image(bar_path, x=110, y=40, w=90)
+            # New page to hold both charts side-by-side big size
+            pdf.add_page()
+            pdf.set_font("Arial", 'B', 12)
+            pdf.cell(200, 10, txt="Cluster Distribution & Total Spend", ln=True, align='C')
+    
+            # Insert images equally
+            pdf.image("real_cluster_pie.png", x=10, y=30, w=95, h=95)
+            pdf.image(bar_path, x=105, y=30, w=95, h=95)
     
         # Smart suggestions section
         pdf.add_page()
@@ -169,7 +170,7 @@ if uploaded_file:
         # Footer
         pdf.set_y(-20)
         pdf.set_font("Arial", 'I', 8)
-        pdf.cell(0, 10, '© 2025 Ragvendra Murugesan | Final Project Submission', 0, 0, 'C')
+        pdf.cell(0, 10, '© 2025 Raghavendra Murugesan | Final Project Submission', 0, 0, 'C')
     
         return pdf.output(dest='S').encode('latin1')
 

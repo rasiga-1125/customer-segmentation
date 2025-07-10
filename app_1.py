@@ -100,7 +100,7 @@ if uploaded_file:
         pdf.set_font("Arial", 'B', 16)
         pdf.cell(200, 10, txt="Customer Segmentation & Marketing Report", ln=True, align='C')
         pdf.set_font("Arial", size=12)
-        pdf.cell(200, 10, txt="Prepared by: Rasiga Priya (Pappu)", ln=True, align='C')
+        pdf.cell(200, 10, txt="Prepared by: Raghavendra Murugesan", ln=True, align='C')
         pdf.cell(200, 10, txt="Project Title: Smart Customer Intelligence System", ln=True, align='C')
         pdf.cell(200, 10, txt=f"Generated on: {datetime.now().strftime('%Y-%m-%d %H:%M:%S')}", ln=True, align='C')
         pdf.ln(10)

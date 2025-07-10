@@ -88,6 +88,7 @@ if uploaded_file:
         import io
         import matplotlib.pyplot as plt
         from fpdf import FPDF
+        import tempfile
     
         pdf = FPDF()
         pdf.add_page()
@@ -114,7 +115,7 @@ if uploaded_file:
                     val_str = f"{val:.2f}" if isinstance(val, (int, float)) else str(val)
                     pdf.cell(200, 8, txt=f"{col}: {val_str}", ln=True)
     
-        # Pie chart image
+        # Pie chart image (temporary file)
         cluster_counts = cluster_profiles.shape[0]
         if cluster_counts > 1:
             fig, ax = plt.subplots(figsize=(4, 4))
@@ -122,11 +123,10 @@ if uploaded_file:
             labels = [f"Cluster {i}" for i in range(cluster_counts)]
             ax.pie(sizes, labels=labels, autopct='%1.1f%%')
             ax.set_title("Sample Cluster Distribution")
-            buf = io.BytesIO()
-            fig.savefig(buf, format="PNG")
-            plt.close(fig)
-            buf.seek(0)
-            pdf.image(buf, x=60, y=None, w=90)
+            with tempfile.NamedTemporaryFile(delete=False, suffix=".png") as tmpfile:
+                fig.savefig(tmpfile.name, format="PNG")
+                plt.close(fig)
+                pdf.image(tmpfile.name, x=60, w=90)
     
         # Smart suggestions section
         pdf.add_page()
@@ -152,6 +152,7 @@ if uploaded_file:
             pdf.cell(200, 10, txt=f"Cluster {idx}: {msg}", ln=True)
     
         return pdf.output(dest='S').encode('latin1')
+
 
     pdf_bytes = create_pdf(cluster_profiles)
     b64 = base64.b64encode(pdf_bytes).decode()

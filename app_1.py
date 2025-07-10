@@ -81,6 +81,8 @@ if uploaded_file:
     ax_pie.pie(cluster_counts, labels=cluster_counts.index, autopct='%1.1f%%', startangle=90)
     ax_pie.axis('equal')
     st.pyplot(fig_pie)
+    fig_pie.savefig("real_cluster_pie.png")
+
 
     # PDF Report Generator
     def create_pdf(cluster_profiles):
@@ -117,18 +119,12 @@ if uploaded_file:
                     pdf.cell(200, 8, txt=f"{col}: {val_str}", ln=True)
     
         # Charts Section
-        if not cluster_profiles.empty:
-            # Pie chart: cluster distribution (dummy example, real chart logic should use actual cluster assignment counts)
+        if os.path.exists("real_cluster_pie.png"):
             pdf.add_page()
-            fig1, ax1 = plt.subplots(figsize=(4, 4))
-            sizes = [1 for _ in range(len(cluster_profiles))]  # Update with real cluster size if available
-            labels = [f"Cluster {i}" for i in range(len(cluster_profiles))]
-            ax1.pie(sizes, labels=labels, autopct='%1.1f%%')
-            ax1.set_title("Cluster Distribution (Dummy)")
-            with tempfile.NamedTemporaryFile(delete=False, suffix=".png") as piefile:
-                fig1.savefig(piefile.name, format="PNG")
-                plt.close(fig1)
-                pdf.image(piefile.name, x=60, w=90)
+            pdf.set_font("Arial", 'B', 12)
+            pdf.cell(200, 10, txt="Real Cluster Distribution", ln=True, align='C')
+            pdf.image("real_cluster_pie.png", x=30, w=150)
+
     
             # Bar chart: Total Spend per cluster
             pdf.add_page()
